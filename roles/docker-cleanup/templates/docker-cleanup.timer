@@ -1,0 +1,11 @@
+[Unit]
+Description=Cleanup docker every midnight
+
+[Timer]
+# OnCalendar=daily
+OnCalendar=*-*-* 01:00:00
+Unit=docker-cleanup.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

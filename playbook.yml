@@ -1,0 +1,66 @@
+---
+- name: Update and install packages and prepare server baseline
+  hosts: all
+  become: true
+  roles:
+    - role: baseline
+      tags: [apt, baseline]
+    - role: Stouts.hostname
+      tags: [hostname, baseline]
+
+- name: Install and prepare docker
+  hosts: all
+  become: true
+  roles:
+    - role: geerlingguy.docker
+      docker_package_state: present
+      docker_install_compose: true
+      tags: [docker, docker-install]
+    - role: pip-docker
+      tags: [docker, docker-install]
+    - role: docker-cleanup
+      tags: [docker, docker-cleanup]
+    - role: docker-login
+      tags: [docker, docker-login]
+  tags:
+    - docker
+
+- name: Install and configure tinc mesh vpn
+  hosts: all
+  become: true
+  roles:
+    - role: matthiaslohr.tincvpn
+      tags:
+        - tinc
+
+- name: Install gitlab-runner
+  hosts: gitlab_runner
+  become: true
+  roles:
+    - role: riemers.gitlab-runner
+      tags:
+        - gitlab-runner
+  tags:
+    - gitlab-runner
+
+- name: Install puppet-master
+  hosts: puppet_master
+  become: true
+  roles:
+    - role: docker-compose
+      vars:
+        docker_compose_name: puppet-master
+        docker_compose_file: "{{ puppet_master_docker_compose }}"
+  tags:
+    - puppet-master
+
+- name: Install folding@home
+  hosts: all
+  become: true
+  roles:
+    - role: docker-compose
+      vars:
+        docker_compose_name: fah
+        docker_compose_file: "{{ fah_docker_compose }}"
+  tags:
+    - fah

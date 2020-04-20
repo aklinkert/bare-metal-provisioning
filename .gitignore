@@ -1,0 +1,7 @@
+/.vagrant
+/.ansible
+/roles-lib
+*.retry
+/cache
+/fetch
+/tincvpn-hosts

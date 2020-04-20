@@ -1,0 +1,22 @@
+- name: install updates
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install packages
+  package:
+    name:
+      - htop
+      - iotop
+      - nload
+      - iptraf
+      - nethogs
+      - vim
+      - elinks
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - telnet
+      - software-properties-common
+    state: latest

@@ -1,0 +1,15 @@
+fah_team: ""
+fah_name: ""
+
+fah_docker_compose: |
+  version: '3.5'
+  services:
+    fah:
+      image: johnktims/folding-at-home:latest
+      restart: always
+      ports:
+        - "127.0.0.1:7396:7396"
+      command:
+        - "--user={{ fah_name }}"
+        - "--team={{ fah_team }}"
+        - "--power=full"

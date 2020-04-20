@@ -1,0 +1,82 @@
+puppet_master_couchdb_username: ""
+puppet_master_couchdb_password: ""
+
+puppet_master_queue_username: ""
+puppet_master_queue_password: ""
+
+puppet_mater_api_token: ""
+puppet_master_executor_version: 1.1.0
+puppet_master_gateway_version: 1.1.2
+
+puppet_master_docker_compose: |
+  version: '3.5'
+  services:
+    executor:
+      image: scalify/puppet-master-executor:{{ puppet_master_executor_version }}
+      restart: always
+      networks:
+        - puppet_master
+      environment:
+        - "NODE_ENV=prod"
+        - "QUEUE_HOST=queue"
+        - "QUEUE_PORT=5672"
+        - "QUEUE_USERNAME={{ puppet_master_queue_username }}"
+        - "QUEUE_PASSWORD={{ puppet_master_queue_password }}"
+
+    gateway:
+      image: scalify/puppet-master-gateway:{{ puppet_master_gateway_version }}
+      restart: always
+      networks:
+        - puppet_master
+      environment:
+        - "COUCH_DB_HOST=database"
+        - "COUCH_DB_PORT=5984"
+        - "COUCH_DB_USERNAME={{ puppet_master_couchdb_username }}"
+        - "COUCH_DB_PASSWORD={{ puppet_master_couchdb_password }}"
+        - "QUEUE_HOST=queue"
+        - "QUEUE_PORT=5672"
+        - "QUEUE_USERNAME={{ puppet_master_queue_username }}"
+        - "QUEUE_PASSWORD={{ puppet_master_queue_password }}"
+        - "VERBOSE=false"
+        - "LISTEN_PORT=8888"
+        - "API_TOKEN={{ puppet_mater_api_token }}"
+        - "ENABLE_API=true"
+        - "ENABLE_JOBS=true"
+      command: "gateway"
+      ports:
+        - "8888:8888"
+
+    database:
+      image: couchdb:2.2
+      volumes:
+        - "./data/database:/opt/couchdb/data"
+      restart: always
+      networks:
+        - puppet_master
+      environment:
+        - "COUCHDB_USER={{ puppet_master_couchdb_username }}"
+        - "COUCHDB_PASSWORD={{ puppet_master_couchdb_password }}"
+      ports:
+        - "127.0.0.1:5984:5984"
+
+    queue:
+      image: rabbitmq:3.7.7-management-alpine
+      environment:
+        - "RABBITMQ_DEFAULT_USER={{ puppet_master_queue_username }}"
+        - "RABBITMQ_DEFAULT_PASS={{ puppet_master_queue_password }}"
+      volumes:
+        - "./data/queue:/var/lib/rabbitmq"
+      expose:
+        - "5672"
+      restart: always
+      networks:
+        - puppet_master
+      ports:
+        - "127.0.0.1:5672:5672"
+        - "127.0.0.1:15672:15672"
+
+  networks:
+    default: {}
+    puppet_master:
+      external: false
+      name: puppet_master

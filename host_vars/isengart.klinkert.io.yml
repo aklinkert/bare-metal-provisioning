@@ -1,0 +1,23 @@
+ansible_ssh_user: "alex"
+ansible_host: "isengart"
+
+tincvpn_de1_ip: "10.0.0.100"
+tincvpn_connect_to:
+  - gitlab-runner.klinkert.io
+
+fah_docker_compose: |
+  version: '3.5'
+  services:
+    fah:
+      image: johnktims/folding-at-home:latest
+      restart: always
+      ports:
+        - "127.0.0.1:7396:7396"
+      devices:
+        - "/dev/nvidia0:/dev/nvidia0"
+        - "/dev/nvidiactl:/dev/nvidiactl"
+        - "/dev/nvidia-uvm:/dev/nvidia-uvm"
+      command:
+        - "--user={{ fah_name }}"
+        - "--team={{ fah_team }}"
+        - "--power=full"

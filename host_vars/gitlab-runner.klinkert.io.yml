@@ -1,0 +1,3 @@
+tincvpn_de1_ip: "10.0.0.10"
+tincvpn_connect_to:
+  - puppet-master.klinkert.io

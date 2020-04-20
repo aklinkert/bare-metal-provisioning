@@ -1,0 +1,9 @@
+[Unit]
+Description=Cleanup docker
+
+[Service]
+Type=simple
+Nice=19
+IOSchedulingClass=2
+IOSchedulingPriority=7
+ExecStart=/usr/local/bin/docker-cleanup.sh

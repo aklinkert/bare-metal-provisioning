@@ -1,0 +1,15 @@
+gitlab_runner_package_name: gitlab-runner
+gitlab_runner_registration_token: ""
+gitlab_runner_concurrent: '{{ ansible_processor_vcpus * 4 }}'
+gitlab_runner_runners:
+  - name: 'gitlab-runner.klinkert.io'
+    executor: docker
+    docker_image: 'alpine'
+    tags:
+      - docker
+    docker_volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    # docker_privileged: false
+    extra_configs:
+      runners.docker:
+        memory: 1g
